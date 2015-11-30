@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
+		<item value="light1PubTopic" key="selection"/>
+		<list key="findhistory">
+			<item value="light1PubTopic"/>
+			<item value="light2PubTopic"/>
+			<item value="btn3"/>
+			<item value="LIGHT_2_PUB"/>
+			<item value="message"/>
+			<item value="Message"/>
+			<item value="topic"/>
+			<item value="Topic"/>
+		</list>
+	</section>
+</section>

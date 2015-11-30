@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="android.widget.TextView"/>
+<fullyQualifiedTypeName name="android.os.Handler"/>
+<fullyQualifiedTypeName name="org.eclipse.paho.client.mqttv3.MqttClient"/>
+<fullyQualifiedTypeName name="org.eclipse.paho.client.mqttv3.MqttConnectOptions"/>
+<fullyQualifiedTypeName name="java.util.concurrent.ScheduledExecutorService"/>
+<fullyQualifiedTypeName name="android.os.Message"/>
+<fullyQualifiedTypeName name="android.widget.Toast"/>
+<fullyQualifiedTypeName name="java.util.concurrent.Executors"/>
+<fullyQualifiedTypeName name="java.util.concurrent.TimeUnit"/>
+<fullyQualifiedTypeName name="org.eclipse.paho.client.mqttv3.persist.MemoryPersistence"/>
+<fullyQualifiedTypeName name="org.eclipse.paho.client.mqttv3.MqttCallback"/>
+<fullyQualifiedTypeName name="org.eclipse.paho.client.mqttv3.IMqttDeliveryToken"/>
+<fullyQualifiedTypeName name="android.view.KeyEvent"/>
+<fullyQualifiedTypeName name="org.eclipse.paho.client.mqttv3.MqttException"/>
+<fullyQualifiedTypeName name="android.widget.ImageButton"/>
+<fullyQualifiedTypeName name="com.eastsoft.mqtt.R.id"/>
+<fullyQualifiedTypeName name="com.eastsoft.mqtt.R.drawable"/>
+<fullyQualifiedTypeName name="android.graphics.drawable.Drawable"/>
+<fullyQualifiedTypeName name="android.graphics.Bitmap"/>
+<fullyQualifiedTypeName name="android.graphics.BitmapFactory"/>
+<fullyQualifiedTypeName name="com.google.gson.Gson"/>
+<fullyQualifiedTypeName name="javax.rmi.CORBA.Util"/>
+<fullyQualifiedTypeName name="com.eastsoft.mqtt.uitl.Logger"/>
+<fullyQualifiedTypeName name="javax.swing.JTextArea"/>
+<fullyQualifiedTypeName name="com.eastsoft.mqtt.model.Payload"/>
+<fullyQualifiedTypeName name="javax.swing.JLabel"/>
+<fullyQualifiedTypeName name="android.view.View.OnClickListener"/>
+<fullyQualifiedTypeName name="android.widget.Button"/>
+<fullyQualifiedTypeName name="java.lang.Exception"/>
+<fullyQualifiedTypeName name="com.eastsoft.mqtt.cloud2.model.MyMessage"/>
+<fullyQualifiedTypeName name="com.eastsoft.mqtt.cloud2.model.Payload"/>
+<fullyQualifiedTypeName name="org.eclipse.paho.client.mqttv3.MqttTopic"/>
+<fullyQualifiedTypeName name="android.widget.ImageView"/>
+<fullyQualifiedTypeName name="java.lang.Integer"/>
+<fullyQualifiedTypeName name="java.util.HashMap"/>
+<fullyQualifiedTypeName name="java.util.Map"/>
+<fullyQualifiedTypeName name="com.eastsoft.mqtt.cloud2.R.id"/>
+<fullyQualifiedTypeName name="com.eastsoft.mqtt.cloud2.R.drawable"/>
+<fullyQualifiedTypeName name="javax.swing.JTextField"/>
+</qualifiedTypeNameHistroy>

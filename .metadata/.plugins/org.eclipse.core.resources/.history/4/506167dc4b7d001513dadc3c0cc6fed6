@@ -1,0 +1,173 @@
+package com.eastsoft.mqtt;
+
+import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.rmi.CORBA.Util;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.MqttTopic;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+
+import com.eastsoft.mqtt.model.Payload;
+import com.eastsoft.mqtt.uitl.Logger;
+import com.google.gson.Gson;
+
+public class Server extends JFrame {
+	private static final long serialVersionUID = 1L;
+	private JPanel panel;
+	private JButton button, btn2;
+	private JLabel tf1, tf2;
+
+	private MqttClient client;
+	private String host = "tcp://129.1.11.111:1883";
+	// private String host = "tcp://localhost:1883";
+	private String userName = "test";
+	private String passWord = "test";
+	private MqttTopic topic;
+	private MqttMessage message;
+
+	private String myTopic = "sensor";
+
+	public Server() {
+
+		try {
+			client = new MqttClient(host, "Server", new MemoryPersistence());
+			connect();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		Container container = this.getContentPane();
+		panel = new JPanel();
+		button = new JButton("light1");
+		button.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent ae) {
+				try {
+					Payload payload = new Payload();
+					payload.setAid("1");
+					payload.setState(tf1.getText());
+					pub(payload);
+					MqttDeliveryToken token = topic.publish(message);
+					token.waitForCompletion();
+					System.out.println(token.isComplete() + "========");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		tf1 = new JLabel("off");
+
+		btn2 = new JButton("light2");
+		btn2.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent ae) {
+				try {
+					Payload payload = new Payload();
+					payload.setAid("2");
+					payload.setState(tf2.getText());
+					pub(payload);
+					MqttDeliveryToken token = topic.publish(message);
+					token.waitForCompletion();
+					System.out.println(token.isComplete() + "========");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		tf2 = new JLabel("off");
+		panel.add(tf1);
+		panel.add(button);
+		panel.add(tf2);
+		panel.add(btn2);
+		container.add(panel, "North");
+
+	}
+
+	private void connect() {
+
+		MqttConnectOptions options = new MqttConnectOptions();
+		options.setCleanSession(false);
+		// options.setUserName(userName);
+		// options.setPassword(passWord.toCharArray());
+		// 设置超时时间
+		options.setConnectionTimeout(10);
+		// 设置会话心跳时间
+		options.setKeepAliveInterval(20);
+		try {
+			client.setCallback(new MqttCallback() {
+
+				public void connectionLost(Throwable cause) {
+					System.out.println("connectionLost-----------");
+				}
+
+				public void deliveryComplete(IMqttDeliveryToken token) {
+					System.out.println("deliveryComplete---------"
+							+ token.isComplete());
+				}
+
+				public void messageArrived(String topic, MqttMessage arg1)
+						throws Exception {
+					Logger.printMsg("messageArrived++++topic:{},  content:{}",
+							new Object[] { topic, arg1.toString() });
+					Gson gson = new Gson();
+					Payload payload = (Payload) gson.fromJson(arg1.toString(),
+							Payload.class);
+					switchState(payload);
+
+				}
+			});
+
+			topic = client.getTopic(myTopic);
+
+			client.connect(options);
+			client.subscribe(myTopic, 1);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	private void switchState(Payload payload) {
+		if ("1".equals(payload.getAid()) && tf1!=null) {
+			tf1.setText(payload.getState());
+			
+
+		} else if ("2".equals(payload.getAid())&& tf1!=null) {
+			tf2.setText(payload.getState());
+
+
+		}
+	}
+
+	private void pub(Payload payload) {
+		message = new MqttMessage();
+		message.setQos(1);
+		message.setRetained(true);
+		System.out.println(message.isRetained() + "------ratained状态");
+		Gson gson = new Gson();
+		String payloadStr = gson.toJson(payload);
+		message.setPayload(payloadStr.getBytes());
+	}
+
+	public static void main(String[] args) {
+		Server s = new Server();
+		s.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		s.setSize(600, 370);
+		s.setLocationRelativeTo(null);
+		s.setVisible(true);
+	}
+}

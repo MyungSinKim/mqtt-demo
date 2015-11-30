@@ -1,0 +1,9 @@
+package com.eastsoft.mqtt.cloud2.model;
+
+public class MyMessage {
+
+	private String topicName;
+	private String msg;
+	
+	
+}

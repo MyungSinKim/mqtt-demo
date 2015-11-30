@@ -1,0 +1,213 @@
+package com.eastsoft.mqtt.cloud2;
+
+import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.MqttTopic;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+
+import com.eastsoft.mqtt.cloud2.model.Payload;
+import com.eastsoft.mqtt.cloud2.uitl.Logger;
+
+/**
+ * 
+ * @author ljt
+ * @date 2015-10-29 16:54:29
+ *
+ */
+public class Server extends JFrame {
+	private static final long serialVersionUID = 1L;
+	private JPanel panel;
+	private JButton button, btn2,btn3;
+	private JLabel tf1, tf2;
+	private JTextFiled tf3;
+
+	private MqttClient client;
+//	private String host = "tcp://129.1.11.111:1883";
+	 private String host = "tcp://129.1.99.4:1883";
+	private String userName = "eastsoft";
+	private String passWord = "es";
+	private MqttTopic topic;
+	private MqttMessage message;
+	private final String LIGHT_1_SUB="eastsoft/things/BBBBBBBBBBBB/1664sub";
+	private final String LIGHT_1_PUB="eastsoft/things/BBBBBBBBBBBB/1664pub";
+	private final String LIGHT_2_SUB="eastsoft/things/CCCCCCCCCCCC/1664sub";
+	private final String LIGHT_2_PUB="eastsoft/things/CCCCCCCCCCCC/1664pub";
+	private final String THERMOSTAT_SUB = "eastsoft/things/thermostat";
+
+	private MqttTopic light1PubTopic;
+	private MqttTopic light2PubTopic;
+
+	private String myTopic = "sensor";
+
+	public Server() {
+
+		try {
+			client = new MqttClient(host, "Server", new MemoryPersistence());
+			connect();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		Container container = this.getContentPane();
+		panel = new JPanel();
+		button = new JButton("light1");
+		button.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent ae) {
+				try {
+					Payload payload = new Payload();
+					payload.setTopicName(LIGHT_1_PUB);
+					if ("on".equals(tf1.getText())) {
+						payload.setState("off");
+					} else {
+						payload.setState("on");
+
+					}
+					pub(payload);
+					MqttDeliveryToken token = light1PubTopic.publish(message);
+					token.waitForCompletion();
+					System.out.println(token.isComplete() + "========");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		tf1 = new JLabel("off");
+
+		btn2 = new JButton("light2");
+		btn2.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent ae) {
+				try {
+					Payload payload = new Payload();
+					payload.setTopicName(LIGHT_2_PUB);
+					if ("on".equals(tf2.getText())) {
+						payload.setState("off");
+					} else {
+						payload.setState("on");
+
+					}
+					pub(payload);
+					MqttDeliveryToken token = light2PubTopic.publish(message);
+					token.waitForCompletion();
+					System.out.println(token.isComplete() + "========");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		tf2 = new JLabel("off");
+		
+		
+		btn3 = new JButton("Thermstat");
+		btn3.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent ae) {
+				try {
+					Payload payload = new Payload();
+					payload.setTopicName(THERMOSTAT_SUB);
+					
+					payload.setState("off");
+					
+					pub(payload);
+					MqttDeliveryToken token = light2PubTopic.publish(message);
+					token.waitForCompletion();
+					System.out.println(token.isComplete() + "========");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		panel.add(tf1);
+		panel.add(button);
+		panel.add(tf2);
+		panel.add(btn2);
+		container.add(panel, "North");
+
+	}
+
+	private void connect() {
+
+		MqttConnectOptions options = new MqttConnectOptions();
+		options.setCleanSession(false);
+		 options.setUserName(userName);
+		 options.setPassword(passWord.toCharArray());
+		// 设置超时时间
+		options.setConnectionTimeout(10);
+		// 设置会话心跳时间
+		options.setKeepAliveInterval(20);
+		try {
+			client.setCallback(new MqttCallback() {
+
+				public void connectionLost(Throwable cause) {
+					System.out.println("connectionLost-----------");
+				}
+
+				public void deliveryComplete(IMqttDeliveryToken token) {
+					System.out.println("deliveryComplete---------"
+							+ token.isComplete());
+				}
+
+				public void messageArrived(String topic, MqttMessage arg1)
+						throws Exception {
+					Logger.printMsg("messageArrived++++topic:{},  content:{}",
+							new Object[] { topic, arg1.toString() });
+					Payload payload=new Payload();
+					payload.setState(arg1.toString());
+					payload.setTopicName(topic);
+					switchState(payload);
+
+				}
+			});			
+
+			client.connect(options);
+			light1PubTopic=client.getTopic(LIGHT_1_SUB);
+			light2PubTopic=client.getTopic(LIGHT_2_SUB);
+			client.subscribe(LIGHT_1_PUB, 1);
+			client.subscribe(LIGHT_2_PUB, 1);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	private void switchState(Payload payload) {
+		if (LIGHT_1_PUB.equals(payload.getTopicName()) && tf1 != null) {
+			tf1.setText(payload.getState());
+
+		} else if (LIGHT_2_PUB.equals(payload.getTopicName()) && tf1 != null) {
+			tf2.setText(payload.getState());
+
+		}
+	}
+
+	private void pub(Payload payload) {
+		message = new MqttMessage();
+		message.setQos(1);
+		message.setRetained(true);
+		System.out.println(message.isRetained() + "------ratained状态");
+		
+		message.setPayload(payload.getState().getBytes());
+	}
+
+	public static void main(String[] args) {
+		Server s = new Server();
+		s.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		s.setSize(600, 370);
+		s.setLocationRelativeTo(null);
+		s.setVisible(true);
+	}
+}
